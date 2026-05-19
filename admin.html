@@ -148,10 +148,22 @@
 
       useEffect(() => {
         const isAdminLoggedIn = localStorage.getItem('admin_login_active');
+        const loginTime = Number(localStorage.getItem('admin_login_time') || 0);
+        const now = Date.now();
 
-        if (isAdminLoggedIn !== 'true') {
+        // Session berlaku 12 jam
+        const sessionMaxAge = 12 * 60 * 60 * 1000;
+        const isSessionValid = isAdminLoggedIn === 'true' && loginTime && (now - loginTime < sessionMaxAge);
+
+        if (!isSessionValid) {
+          localStorage.removeItem('admin_login_active');
+          localStorage.removeItem('admin_login_time');
+
           alert('Sesi admin tidak valid. Silakan login kembali.');
-          window.location.href = INDEX_PAGE;
+
+          const currentPath = window.location.pathname;
+          const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+          window.location.href = window.location.origin + basePath + INDEX_PAGE;
           return;
         }
 
@@ -716,7 +728,11 @@
           message: 'Yakin ingin keluar dari Dashboard HR?',
           onConfirm: () => {
             localStorage.removeItem('admin_login_active');
-            window.location.href = INDEX_PAGE;
+            localStorage.removeItem('admin_login_time');
+
+            const currentPath = window.location.pathname;
+            const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            window.location.href = window.location.origin + basePath + INDEX_PAGE;
           }
         });
       };
