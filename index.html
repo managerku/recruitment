@@ -72,7 +72,10 @@
     // Sesuaikan nama file kalau di repo lu pakai lowercase.
     // =====================================================
     function goToPage(pageName) {
-      window.location.href = pageName;
+      const currentPath = window.location.pathname;
+      const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+      const targetUrl = window.location.origin + basePath + pageName;
+      window.location.href = targetUrl;
     }
 
     function JobPortal() {
@@ -157,6 +160,7 @@
             // Session sederhana untuk frontend GitHub.
             // Nanti bisa diperkuat lagi kalau lu mau.
             localStorage.setItem('admin_login_active', 'true');
+            localStorage.setItem('admin_login_time', String(Date.now()));
 
             setLoginStatus({
               type: 'success',
